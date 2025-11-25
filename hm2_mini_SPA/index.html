@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini SPA Router & State</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" onclick="route(event)">Главная</a>
+            <a href="/about" onclick="route(event)">О нас</a>
+            <a href="/news" onclick="route(event)">Новости</a>
+            <a href="/settings" onclick="route(event)">Настройки</a>
+            <a href="/contacts" onclick="route(event)">Контакты</a>
+        </nav>
+    </header>
+    <main id="app">
+        <!-- Содержимое страниц будет загружено сюда -->
+    </main>
+    <script src="app.js"></script>
+</body>
+</html>
