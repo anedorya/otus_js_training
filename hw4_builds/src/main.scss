@@ -1,0 +1,52 @@
+// Определение переменных для цветов и переходов
+$day-bg: #f5f5dc; // Бежевый цвет (дневной режим)
+$day-text: #333;
+$day-container-bg: rgba(255, 255, 255, 0.8);
+$night-bg: #36454F; // Темно-серый цвет (ночной режим)
+$night-text: #eee;
+$night-container-bg: rgba(0, 0, 0, 0.4);
+$transition-ease: background-color 0.5s ease;
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    transition: $transition-ease;
+    font-family: monospace;
+    color: $day-text; // Базовый цвет текста для дневного режима
+
+    .time-container {
+        padding: 20px;
+        border-radius: 10px;
+        background-color: $day-container-bg;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+        // Вложенность для параграфа внутри контейнера
+        p#current-time {
+            font-size: 2em;
+            margin: 0;
+        }
+    }
+
+    /* Стили для дневного режима (по умолчанию) */
+    &.day-mode {
+        background-color: $day-bg;
+        color: $day-text;
+        
+        .time-container {
+            background-color: $day-container-bg;
+        }
+    }
+
+    /* Стили для ночного режима */
+    &.night-mode {
+        background-color: $night-bg;
+        color: $night-text;
+        
+        .time-container {
+            background-color: $night-container-bg;
+        }
+    }
+}
