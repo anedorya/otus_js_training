@@ -13,7 +13,7 @@ npm install
 
 ### 3. Настройка базы данных
 Убедитесь, что в PostgreSQL создана база данных habbits_db.
-Настройки подключения находятся в src/app.module.ts:
+Настройки подключения находятся в /.env:
 Host: localhost
 Port: 5432
 User: postgres
