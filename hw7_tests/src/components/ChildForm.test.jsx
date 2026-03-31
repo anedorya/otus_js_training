@@ -1,9 +1,14 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import ChildForm from './ChildForm';
 
 describe('ChildForm Component', () => {
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('должен корректно рендерить заголовок', () => {
     render(<ChildForm />);
 
@@ -11,20 +16,21 @@ describe('ChildForm Component', () => {
     expect(headingElement).toBeInTheDocument();
   });
 
-  it('должен переключать видимость формы при клике на заголовок', () => {
+  it('должен переключать видимость формы при клике на заголовок', async () => {
+    const user = userEvent.setup();
     render(<ChildForm />);
     const header = screen.getByText(/Заполните анкету на вашего ребенка/i);
-    const contentDiv = header.nextElementSibling;
+    const contentDiv = screen.getByTestId('form-content');
 
-    // Изначально скрыто (проверяем класс)
+    // Изначально скрыто
     expect(contentDiv).toHaveClass('form__content--hide');
 
     // Клик для показа
-    fireEvent.click(header);
+    await user.click(header);
     expect(contentDiv).toHaveClass('form__content--show');
 
     // Клик для скрытия
-    fireEvent.click(header);
+    await user.click(header);
     expect(contentDiv).toHaveClass('form__content--hide');
   });
 
@@ -42,18 +48,63 @@ describe('ChildForm Component', () => {
     const ageInput = screen.getByLabelText(/Age:/i);
     const submitBtn = screen.getByRole('button', { name: /Отправить/i });
 
+
+
     // Эмуляция ввода
     await user.type(nameInput, 'Иван');
     await user.type(emailInput, 'ivan@test.com');
+
+    expect(submitBtn).toBeEnabled();
     await user.type(ageInput, '10');
 
     // Проверка значений
-    expect(nameInput.value).toBe('Иван');
+    expect(nameInput).toHaveValue('Иван');
+    expect(emailInput).toHaveValue('ivan@test.com');
+    expect(ageInput).toHaveValue('10');
     
     // Отправка
     await user.click(submitBtn);
     
-    expect(submitBtn).toBeEnabled();
+    expect(consoleSpy).toHaveBeenCalledTimes(1);
+    expect(consoleSpy).toHaveBeenCalledWith(expect.objectContaining({
+      name: 'Иван',
+      email: 'ivan@test.com',
+      age: '10'
+    }));
+    
+    consoleSpy.mockRestore();
 
   });
+
+
+it('не должен отправлять форму с пустыми полями', async () => {
+  const user = userEvent.setup();
+  const consoleSpy = vi.spyOn(console, 'log');
+  
+  render(<ChildForm />);
+  
+  // Открываем форму
+  await user.click(screen.getByText(/Заполните анкету на вашего ребенка/i));
+  
+  const submitBtn = screen.getByRole('button', { name: /Отправить/i });
+  
+  // Пытаемся отправить пустую форму
+  await user.click(submitBtn);
+  
+  // Проверяем, что console.log НЕ был вызван
+  expect(consoleSpy).not.toHaveBeenCalled();
+  
+  // Проверяем, что поля все еще пустые
+  const nameInput = screen.getByLabelText(/Имя:/i);
+  const emailInput = screen.getByLabelText(/Email:/i);
+  const ageInput = screen.getByLabelText(/Age:/i);
+  
+  expect(nameInput).toHaveValue('');
+  expect(emailInput).toHaveValue('');
+  expect(ageInput).toHaveValue('');
+  
+  consoleSpy.mockRestore();
+});
+
+
 });
